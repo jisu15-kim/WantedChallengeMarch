@@ -11,6 +11,7 @@ import Kingfisher
 class DemoCell: UITableViewCell {
     
     var image: String?
+    var previousTask: DispatchWorkItem?
     
     @IBOutlet weak var setButton: UIButton!
     @IBOutlet weak var demoImageView: UIImageView!
@@ -43,17 +44,16 @@ class DemoCell: UITableViewCell {
             setupImage(url: url)
         }
     }
+
     
     private func setupImage(url: String) {
         demoImageView.image = ImageUrl.defaultImage
-        
-        // 이전 작업을 취소할 수 있는 DispatchWorkItem을 생성합니다.
-        var previousTask: DispatchWorkItem?
+
         previousTask?.cancel()
 
-        // 2초 후 실행할 작업을 예약합니다.
+        // 0.5초 후 실행
+        // url 이미지 넣기
         let task = DispatchWorkItem { [weak self] in
-            // 작업 내용
             self?.demoImageView.kf.setImage(with: URL(string: url)!)
             self?.revertImage()
         }
@@ -63,16 +63,14 @@ class DemoCell: UITableViewCell {
     
     private func revertImage() {
         
-        // 이전 작업을 취소할 수 있는 DispatchWorkItem을 생성합니다.
-        var previousTask: DispatchWorkItem?
         previousTask?.cancel()
 
-        // 2초 후 실행할 작업을 예약합니다.
+        // 2초 후 실행
+        // 이미지 복구
         let task = DispatchWorkItem { [weak self] in
-            // 작업 내용
             self?.demoImageView.image = ImageUrl.defaultImage
         }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: task)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0, execute: task)
         previousTask = task
     }
     
